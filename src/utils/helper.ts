@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { IWatchlistItem } from "@/types";
 
 export const getErrorMessage = (error: any) => {
   let errorMessage;
@@ -27,6 +28,15 @@ export const saveTheme = (theme: string) => {
 export const getTheme = () => {
   const theme = localStorage.getItem("theme");
   return theme ? theme : "";
+};
+
+export const saveWatchlist = (watchlist: IWatchlistItem[]) => {
+  localStorage.setItem("watchlist", JSON.stringify(watchlist));
+};
+
+export const getWatchlist = (): IWatchlistItem[] => {
+  const data = localStorage.getItem("watchlist");
+  return data ? JSON.parse(data) : [];
 };
 
 export function cn(...inputs: ClassValue[]) {

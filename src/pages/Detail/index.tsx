@@ -5,8 +5,10 @@ import { useParams } from "react-router-dom";
 import { Poster, Loader, Error, Section } from "@/common";
 import { Casts, Videos, Genre } from "./components";
 
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { useGetShowQuery } from "@/services/TMDB";
 import { useMotion } from "@/hooks/useMotion";
+import { useWatchlist } from "@/context/watchlistContext";
 import { mainHeading, maxWidth, paragraph } from "@/styles";
 import { cn } from "@/utils/helper";
 
@@ -14,6 +16,8 @@ const Detail = () => {
   const { category, id } = useParams();
   const [show, setShow] = useState<Boolean>(false);
   const { fadeDown, staggerContainer } = useMotion();
+
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
 
   const {
     data: movie,
@@ -75,12 +79,42 @@ const Detail = () => {
             animate="show"
             className="text-gray-300 sm:max-w-[80vw] max-w-[90vw]  md:max-w-[520px] font-nunito flex flex-col lg:gap-5 sm:gap-4 xs:gap-[14px] gap-3 mb-8 flex-1 will-change-transform motion-reduce:transform-none"
           >
-            <m.h2
+            <m.div
               variants={fadeDown}
-              className={cn(mainHeading, " md:max-w-[420px] will-change-transform motion-reduce:transform-none")}
+              className="flex items-center gap-3 will-change-transform motion-reduce:transform-none"
             >
-              {title || name}
-            </m.h2>
+              <h2
+                className={cn(mainHeading, " md:max-w-[420px]")}
+              >
+                {title || name}
+              </h2>
+              <button
+                type="button"
+                onClick={() => {
+                  const movieId = String(movie.id);
+                  if (isInWatchlist(movieId)) {
+                    removeFromWatchlist(movieId);
+                  } else {
+                    addToWatchlist({
+                      id: movie.id,
+                      poster_path: posterPath,
+                      original_title: title,
+                      name,
+                      overview,
+                      backdrop_path: movie.backdrop_path,
+                      category: String(category),
+                    });
+                  }
+                }}
+                className="text-2xl p-2 rounded-full hover:scale-110 transition-all duration-300 flex-shrink-0"
+              >
+                {isInWatchlist(String(movie.id)) ? (
+                  <BsBookmarkFill className="text-yellow-400" />
+                ) : (
+                  <BsBookmark className="text-gray-300" />
+                )}
+              </button>
+            </m.div>
 
             <m.ul
               variants={fadeDown}
